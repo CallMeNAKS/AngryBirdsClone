@@ -26,14 +26,6 @@ namespace CodeBase.BaseMaterial
             Destroy(gameObject);
         }
 
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                Explode();
-            }
-        }
-
         private void ApplyExplosionForce()
         {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, _explosionRadius);
