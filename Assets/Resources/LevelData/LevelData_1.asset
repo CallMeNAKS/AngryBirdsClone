@@ -14,9 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _birds:
   - {fileID: 8669111186509542598, guid: 5457b3e8c6fcb094db7800d52471e509, type: 3}
-  - {fileID: 8669111186509542598, guid: 5457b3e8c6fcb094db7800d52471e509, type: 3}
-  - {fileID: 8669111186509542598, guid: 5457b3e8c6fcb094db7800d52471e509, type: 3}
-  - {fileID: 8669111186509542598, guid: 5457b3e8c6fcb094db7800d52471e509, type: 3}
-  - {fileID: 8669111186509542598, guid: 5457b3e8c6fcb094db7800d52471e509, type: 3}
-  - {fileID: 8669111186509542598, guid: 5457b3e8c6fcb094db7800d52471e509, type: 3}
   _pigBasePrefab: {fileID: 2876030706891547858, guid: 8c782513973899b49a3dd0ef07355ada, type: 3}

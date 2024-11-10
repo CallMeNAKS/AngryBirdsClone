@@ -1,4 +1,5 @@
-﻿using CodeBase.Bird;
+﻿using System;
+using CodeBase.Bird;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -13,6 +14,8 @@ namespace CodeBase.Slingshot
         [Header("Dependencies")] [SerializeField]
         private ShootPoint _shotPoint;
 
+        public event Action BirdsEnded;
+
         private async void Awake()
         {
             await GetBird();
@@ -26,6 +29,10 @@ namespace CodeBase.Slingshot
         private async UniTask GetBird()
         {
             _bird = await _birdQueue.GetNextBird(_shotPoint.transform.position);
+            if (_bird == null)
+            {
+                BirdsEnded?.Invoke();
+            }
             await WaitShot();
         }
 

@@ -40,6 +40,10 @@ namespace CodeBase.Bird
 
         public async UniTask<Bird> GetNextBird(Vector3 placeForBird)
         {
+            if (_birdQueue.Count <= 0)
+            {
+                return null;
+            }
             var nextBird = _birdQueue.Dequeue();
             
             ShiftBirdsPositions();

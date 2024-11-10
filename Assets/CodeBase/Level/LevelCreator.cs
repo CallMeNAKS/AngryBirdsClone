@@ -1,6 +1,7 @@
 ﻿using System;
 using CodeBase.Bird;
 using CodeBase.Calculator;
+using CodeBase.GameLoop;
 using CodeBase.Pig;
 using CodeBase.UI;
 using UnityEngine;
@@ -29,13 +30,27 @@ namespace CodeBase.Level
         {
             var birds = CreateBirds(levelData);
             var birdsQueue = CreateBirdServices(birds);
-            CreateSlingshot(birdsQueue);
+            var slingshot = CreateSlingshot(birdsQueue);
             var pigBase = CreatePigBase(levelData);
 
-            var scoreCalculator = new DefaultScoreCalculator(birds, pigBase.Pigs);
-            scoreCalculator.Init();
+            var scoreCalculator = CreateCalculator(birds, pigBase);
 
             CreateUI(scoreCalculator);
+            
+            CreateGameLoop(slingshot, pigBase);
+        }
+
+        private static void CreateGameLoop(Slingshot.Slingshot slingshot, PigBase pigBase)
+        {
+            var gameLoop = new GameLoop.GameLoop(slingshot, pigBase);
+            gameLoop.Init();
+        }
+
+        private static DefaultScoreCalculator CreateCalculator(Bird.Bird[] birds, PigBase pigBase)
+        {
+            var scoreCalculator = new DefaultScoreCalculator(birds, pigBase.Pigs);
+            scoreCalculator.Init();
+            return scoreCalculator;
         }
 
         private PigBase CreatePigBase(LevelData levelData)
@@ -60,7 +75,7 @@ namespace CodeBase.Level
             return birds;
         }
 
-        private void CreateSlingshot(BirdQueue birdsQueue)
+        private Slingshot.Slingshot CreateSlingshot(BirdQueue birdsQueue)
         {
             _slingshot.gameObject.SetActive(false); // Нормальное ли решение? 
             
@@ -69,6 +84,8 @@ namespace CodeBase.Level
             slingshot.gameObject.SetActive(true);
             
             _slingshot.gameObject.SetActive(true);
+
+            return slingshot;
         }
 
         private void CreateUI(ScoreCalculator scoreCalculator)
