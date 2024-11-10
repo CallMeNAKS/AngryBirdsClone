@@ -211,11 +211,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pointPrefab: {fileID: 2040332864006229828, guid: aa5ca115729a12a4bb0235601a955537, type: 3}
-  _startPoint: {fileID: 3455239475290891696}
-  _direction: {x: 0, y: 0, z: 0}
-  _distance: 5
-  _pointCount: 8
+  _pointCount: 11
   _shootPoint: {fileID: 2749468406846910128}
+  trajectorySpacing: 2
 --- !u!1 &6478187476284014518
 GameObject:
   m_ObjectHideFlags: 0

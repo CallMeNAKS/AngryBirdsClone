@@ -11,7 +11,7 @@ namespace CodeBase.Slingshot
         [SerializeField] private float maxDistance = 2f;
         [Header("Debug")] [SerializeField] private Vector3 start;
         public event Action<Vector3> Release;
-        public event Action<Vector3> Trajectory;
+        public event Action<Vector3, float> Trajectory;
         
         private new Camera camera;
 
@@ -23,13 +23,12 @@ namespace CodeBase.Slingshot
 
         private void OnMouseDrag()
         {
-            if (enabled == false)
-            {
+            if (!enabled)
                 return;
-            }
 
-            var target = camera!.ScreenToWorldPoint(Input.mousePosition);
+            var target = camera.ScreenToWorldPoint(Input.mousePosition);
             target.z = 0;
+
             if (Vector3.Distance(start, target) < maxDistance)
             {
                 transform.position = target;
@@ -39,10 +38,13 @@ namespace CodeBase.Slingshot
                 var direction = (target - start).normalized * maxDistance;
                 transform.position = start + direction;
             }
-            
-            Trajectory?.Invoke(transform.position);
-        }
 
+            var directionToStart = start - transform.position; //TODO
+            float tensionStrength = Mathf.Clamp01(directionToStart.magnitude / maxDistance);
+
+            Trajectory?.Invoke(directionToStart, tensionStrength);
+        }
+        
         private void OnMouseUp()
         {
             var releasePosition = transform.position;

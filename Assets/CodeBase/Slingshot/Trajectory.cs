@@ -4,21 +4,24 @@ using UnityEngine;
 
 public class DynamicLineFromDirection : MonoBehaviour
 {
-    [SerializeField] private GameObject _pointPrefab;   // Префаб точки (например, Sphere)
-    [SerializeField] private Transform _startPoint;     // Точка начала
-    [SerializeField] private Vector3 _direction = Vector3.forward; // Направление линии
-    [SerializeField] private float _distance = 0.2f;      // Расстояние между точками
-    [SerializeField] private int _pointCount = 5;      // Количество точек
-
+    [SerializeField] private GameObject _pointPrefab;
+    [SerializeField] private int _pointCount = 5;
     [SerializeField] private ShootPoint _shootPoint;
-    
-    private float _gravity = -9.81f; 
-
-    private GameObject[] _points; // Массив для хранения точек
+    [SerializeField] private float trajectorySpacing = 2f;
+    private GameObject[] _points;
 
     private void OnEnable()
     {
         _shootPoint.Trajectory += DrawLine;
+        _shootPoint.Release += ShootPointOnRelease;
+    }
+
+    private void ShootPointOnRelease(Vector3 obj)
+    {
+        foreach (var point in _points)
+        {
+            point.SetActive(false);
+        }
     }
 
     private void Start()
@@ -27,36 +30,30 @@ public class DynamicLineFromDirection : MonoBehaviour
 
         for (int i = 0; i < _pointCount; i++)
         {
-            Vector3 position = transform.position + _direction.normalized * i * _distance;
-            _points[i] = Instantiate(_pointPrefab, position, Quaternion.identity);
+            _points[i] = Instantiate(_pointPrefab, transform.position, Quaternion.identity);
+            _points[i].SetActive(false);
         }
     }
 
-    private void DrawLine(Vector3 direction)
+    private void DrawLine(Vector3 direction, float tensionStrength)
     {
-        // Нормализуем направление выстрела
-        Vector3 normalizedDirection = -direction.normalized;
+        Vector3 normalizedDirection = direction.normalized;
+        float initialSpeed = 30f * tensionStrength;
+        float gravity = Mathf.Abs(Physics.gravity.y);
 
-        // Начальная скорость (можно изменять для нужного эффекта)
-        float speed = 30f;
-
-        // Рассчитываем расстояние между точкой старта и точкой выстрела
-        float distanceToShootPoint = Vector3.Distance(transform.position, _shootPoint.transform.position);
-
-        // Меняем расстояние между точками в зависимости от дистанции до точки выстрела
-        float dynamicDistance = Mathf.Max(0.1f, distanceToShootPoint / _pointCount) * _distance;
+        // Увеличиваем расстояние между точками по коэффициенту `trajectorySpacing`
+        float dynamicDistance = Mathf.Max(0.5f, 0.5f * tensionStrength) * trajectorySpacing;
 
         for (int i = 0; i < _pointCount; i++)
         {
-            // Время для точки i, рассчитываем по её индексу с учётом динамического расстояния
-            float time = i * dynamicDistance / speed;
+            float time = i * dynamicDistance / initialSpeed;
 
-            // Параболическое движение
-            float x = transform.position.x + normalizedDirection.x * speed * time;
-            float y = transform.position.y + normalizedDirection.y * speed * time + 0.5f * _gravity * time * time;
-            float z = transform.position.z + normalizedDirection.z * speed * time;
+            float x = _shootPoint.transform.position.x + normalizedDirection.x * initialSpeed * time;
+            float y = _shootPoint.transform.position.y + normalizedDirection.y * initialSpeed * time - 0.5f * gravity * time * time;
+            float z = _shootPoint.transform.position.z + normalizedDirection.z * initialSpeed * time;
 
             _points[i].transform.position = new Vector3(x, y, z);
+            _points[i].SetActive(true);
         }
     }
 
@@ -64,5 +61,6 @@ public class DynamicLineFromDirection : MonoBehaviour
     private void OnDisable()
     {
         _shootPoint.Trajectory += DrawLine;
+        _shootPoint.Release -= ShootPointOnRelease;
     }
 }
