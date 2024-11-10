@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using CodeBase.Pig;
+using UnityEngine;
 
 namespace CodeBase.Level
 {
@@ -6,9 +7,9 @@ namespace CodeBase.Level
     public class LevelData : ScriptableObject
     {
         [SerializeField] private Bird.Bird[] _birds;
-        [SerializeField] private GameObject _pigBasePrefab;
+        [SerializeField] private PigBase _pigBasePrefab;
         
         public Bird.Bird[] Birds => _birds;
-        public GameObject PigBasePrefab => _pigBasePrefab;
+        public PigBase PigBasePrefab => _pigBasePrefab;
     }
 }

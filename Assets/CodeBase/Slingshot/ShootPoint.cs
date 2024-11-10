@@ -10,7 +10,9 @@ namespace CodeBase.Slingshot
     {
         [SerializeField] private float maxDistance = 2f;
         [Header("Debug")] [SerializeField] private Vector3 start;
-        public event Action<Vector3> release;
+        public event Action<Vector3> Release;
+        public event Action<Vector3> Trajectory;
+        
         private new Camera camera;
 
         private void Start()
@@ -37,6 +39,8 @@ namespace CodeBase.Slingshot
                 var direction = (target - start).normalized * maxDistance;
                 transform.position = start + direction;
             }
+            
+            Trajectory?.Invoke(transform.position);
         }
 
         private void OnMouseUp()
@@ -44,7 +48,7 @@ namespace CodeBase.Slingshot
             var releasePosition = transform.position;
             transform.position = start;
             var delta = releasePosition - start;
-            release?.Invoke(delta.normalized * (delta.magnitude / maxDistance));
+            Release?.Invoke(delta.normalized * (delta.magnitude / maxDistance));
         }
     }
 }

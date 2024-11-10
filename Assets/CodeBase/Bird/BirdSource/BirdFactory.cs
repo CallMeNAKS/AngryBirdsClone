@@ -20,7 +20,6 @@ namespace CodeBase.Bird.BirdFactory
             for (int i = 0; i < _birds.Length; i++)
             {
                 var createdBird = GameObject.Instantiate(_birds[i]);
-                createdBird.SetConnectedBody(_slingshot);
                 birds[i] = createdBird;
             }
 

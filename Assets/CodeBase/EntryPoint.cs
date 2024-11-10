@@ -9,6 +9,7 @@ public class EntryPoint : MonoBehaviour
 
     [SerializeField] private Transform _slingshotPosition;
     [SerializeField] private Transform _pigBasePosition;
+    [SerializeField] private Transform _birdPosition;
     
     [SerializeField] private Slingshot _slingshot;
     
@@ -25,7 +26,7 @@ public class EntryPoint : MonoBehaviour
 
     private void CreateLevel()
     {
-        var level = new LevelCreator(_slingshotPosition, _pigBasePosition, _slingshot);
+        var level = new LevelCreator(_slingshotPosition, _pigBasePosition, _birdPosition, _slingshot);
         level.CreateLevel(_LevelData);
     }
 }
