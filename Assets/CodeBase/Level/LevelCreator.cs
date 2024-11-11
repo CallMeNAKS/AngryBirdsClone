@@ -1,7 +1,5 @@
-﻿using System;
-using CodeBase.Bird;
+﻿using CodeBase.Bird;
 using CodeBase.Calculator;
-using CodeBase.GameLoop;
 using CodeBase.Pig;
 using CodeBase.UI;
 using UnityEngine;
@@ -15,8 +13,12 @@ namespace CodeBase.Level
         private Transform _pigBasePosition;
         private Transform _birdPosition;
         private Slingshot.Slingshot _slingshot;
+        private LevelData _currentLevelData;
         
         private ScoreView _scoreView = Resources.Load<ScoreView>("UI/ScoreUI");
+        private PlayUI _playUI = Resources.Load<PlayUI>("UI/PlayUI");
+        
+        private LevelReseter _levelReseter;
 
         public LevelCreator(Transform slingshotPosition, Transform pigBasePosition, Transform birdPosition,  Slingshot.Slingshot slingshot)
         {
@@ -28,25 +30,50 @@ namespace CodeBase.Level
 
         public void CreateLevel(LevelData levelData)
         {
+            _currentLevelData = levelData;
+
+            BuildLevel(levelData);
+        }
+
+        public void RestartLevel()
+        {
+            _levelReseter.Reset();
+            BuildLevel(_currentLevelData);
+        }
+
+        private void BuildLevel(LevelData levelData)
+        {
             var birds = CreateBirds(levelData);
             var birdsQueue = CreateBirdServices(birds);
             var slingshot = CreateSlingshot(birdsQueue);
             var pigBase = CreatePigBase(levelData);
-
+            
             var scoreCalculator = CreateCalculator(birds, pigBase);
 
-            CreateUI(scoreCalculator);
-            
-            CreateGameLoop(slingshot, pigBase);
+            var scoreView = CreateScoreUI(scoreCalculator);
+            var playUI = CreatePlayUI();
+
+            var gameLoop = CreateGameLoop(slingshot, pigBase);
+
+            _levelReseter = new LevelReseter(birds, slingshot, pigBase, scoreView, playUI);
         }
 
-        private static void CreateGameLoop(Slingshot.Slingshot slingshot, PigBase pigBase)
+        private PlayUI CreatePlayUI()
         {
-            var gameLoop = new GameLoop.GameLoop(slingshot, pigBase);
-            gameLoop.Init();
+            var playUI = GameObject.Instantiate(_playUI);
+            playUI.Init(this);
+            return playUI;
         }
 
-        private static DefaultScoreCalculator CreateCalculator(Bird.Bird[] birds, PigBase pigBase)
+        private GameLoop.GameLoop CreateGameLoop(Slingshot.Slingshot slingshot, PigBase pigBase)
+        {
+            var gameLoop = new GameLoop.GameLoop(slingshot, pigBase, this);
+            gameLoop.Init();
+            
+            return gameLoop;
+        }
+
+        private DefaultScoreCalculator CreateCalculator(Bird.Bird[] birds, PigBase pigBase)
         {
             var scoreCalculator = new DefaultScoreCalculator(birds, pigBase.Pigs);
             scoreCalculator.Init();
@@ -88,10 +115,12 @@ namespace CodeBase.Level
             return slingshot;
         }
 
-        private void CreateUI(ScoreCalculator scoreCalculator)
+        private ScoreView CreateScoreUI(ScoreCalculator scoreCalculator)
         {
             var scoreView = GameObject.Instantiate(_scoreView);
             scoreView.Init(scoreCalculator);
+
+            return scoreView;
         }
     }
 }

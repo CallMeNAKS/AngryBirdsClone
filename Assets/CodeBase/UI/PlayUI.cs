@@ -2,21 +2,21 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CodeBase.GameLoop
+namespace CodeBase.UI
 {
-    public class WinView : MonoBehaviour
+    public class PlayUI : MonoBehaviour
     {
         private LevelCreator _levelCreator;
-
+        
         [SerializeField] private Button _restartButton;
 
         public void Init(LevelCreator levelCreator)
         {
             _levelCreator = levelCreator;
-
+            
             _restartButton.onClick.AddListener(Restart);
         }
-
+        
         public void Restart()
         {
             _levelCreator.RestartLevel();
